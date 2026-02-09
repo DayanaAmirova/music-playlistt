@@ -2,7 +2,8 @@ package com.example.music.playlist.model.dto;
 
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -11,5 +12,6 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private int age;
-    private String email; // Добавили 5-й атрибут
+    private String email;
+    private String playlistName;
 }

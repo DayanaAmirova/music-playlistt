@@ -2,35 +2,44 @@ package com.example.music.playlist.controller;
 
 import com.example.music.playlist.model.dto.UserDTO;
 import com.example.music.playlist.service.UserService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
+    @Autowired
+    public UserController(UserService userService) { this.userService = userService; }
+
     @PostMapping
-    public UserDTO create(@RequestBody UserDTO dto) {
-        return userService.create(dto);
+    public ResponseEntity<UserDTO> create(@RequestBody UserDTO dto) {
+        return ResponseEntity.ok(userService.create(dto));
     }
 
     @GetMapping
-    public List<UserDTO> getAll() {
-        return userService.getAll();
+    public ResponseEntity<List<UserDTO>> getAll() {
+        return ResponseEntity.ok(userService.getAll());
     }
 
     @GetMapping("/{id}")
-    public UserDTO getById(@PathVariable Long id) {
-        return userService.getById(id);
+    public ResponseEntity<UserDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO dto) {
+        return ResponseEntity.ok(userService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

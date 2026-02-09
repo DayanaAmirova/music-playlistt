@@ -4,17 +4,21 @@ import com.example.music.playlist.model.dto.UserDTO;
 import com.example.music.playlist.model.entity.User;
 import com.example.music.playlist.repository.UserRepository;
 import com.example.music.playlist.service.UserService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDTO create(UserDTO dto) {
@@ -23,22 +27,41 @@ public class UserServiceImpl implements UserService {
                 .lastName(dto.getLastName())
                 .age(dto.getAge())
                 .email(dto.getEmail())
+                .playlistName(dto.getPlaylistName())
                 .build();
+
         user = userRepository.save(user);
         return mapToDTO(user);
     }
 
     @Override
+    public UserDTO getById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return mapToDTO(user);
+    }
+
+    @Override
     public List<UserDTO> getAll() {
-        return userRepository.findAll().stream()
+        return userRepository.findAll()
+                .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDTO getById(Long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        return mapToDTO(user);
+    public UserDTO update(Long id, UserDTO dto) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setFirstName(dto.getFirstName());
+        existingUser.setLastName(dto.getLastName());
+        existingUser.setAge(dto.getAge());
+        existingUser.setEmail(dto.getEmail());
+        existingUser.setPlaylistName(dto.getPlaylistName());
+
+        User updatedUser = userRepository.save(existingUser);
+        return mapToDTO(updatedUser);
     }
 
     @Override
@@ -53,6 +76,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .age(user.getAge())
                 .email(user.getEmail())
+                .playlistName(user.getPlaylistName())
                 .build();
     }
 }
